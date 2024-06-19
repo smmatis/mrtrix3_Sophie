@@ -345,12 +345,10 @@ namespace MR
            buffer (new T* [buffer_size]),
            front (buffer),
            back (buffer),
-           capacity (buffer_size),
+           capacity (std::max(size_t(2), buffer_size)),
            writer_count (0),
            reader_count (0),
-           name (description) {
-             assert (capacity > 0);
-           }
+           name (description) { }
 
          Queue (const Queue&) = delete;
          Queue (Queue&&) = default;
