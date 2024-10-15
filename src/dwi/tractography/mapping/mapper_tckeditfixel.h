@@ -44,8 +44,15 @@ class TrackMapperFixels {
 
 public:
   template <class HeaderType>
-  TrackMapperFixels(const HeaderType &template_image)
+  TrackMapperFixels(
+    const HeaderType &template_image,
+    const std::vector<Eigen::Vector3d> &fixel_directions, 
+    const float angular_threshold
+  )
       : info(template_image),
+        fixel_indexer(template_image),
+        fixel_directions(fixel_directions),
+        angular_threshold_dp(std::cos(angular_threshold * (Math::pi / 180.0))),
         scanner2voxel(Transform(template_image).scanner2voxel.cast<float>()),
         map_zero(false),
         precise(false),
@@ -91,6 +98,8 @@ public:
   }
 
   bool operator()(const Streamline<> &in, Streamline<> &out) const {
+    //vdir is tangents
+    //need to give mapper fixel_indexer, fixel_directions, & angular_threshold indexes
     SetVoxelDir vdir = SetVoxelDir();
     vdir.clear();
     vdir.index = in.get_index();
@@ -107,14 +116,17 @@ public:
       else
         voxelise(temp, vdir);
       postprocess(temp, vdir);
-      // check vdir against fixel and then
     }
+    std::vector<int32_t> tract_fixel_indices;
     out = in;
     return true;
   }
 
 protected:
   const Header info;
+  const Image<uint32_t> &fixel_indexer;
+  const std::vector<Eigen::Vector3d> &fixel_directions;
+  const float angular_threshold_dp;
   const Eigen::Transform<float, 3, Eigen::AffineCompact> scanner2voxel;
   bool map_zero;
   bool precise;

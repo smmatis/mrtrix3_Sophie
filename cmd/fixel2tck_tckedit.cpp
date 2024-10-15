@@ -181,7 +181,7 @@ void run() {
     using SetVoxelDir = DWI::Tractography::Mapping::SetVoxelDir;
     //tckedit uses different loader (MR::DWI::Tractography::Editing::Loader)
     DWI::Tractography::Mapping::TrackLoader loader(track_file, num_tracks, "mapping tracks to fixels");
-    DWI::Tractography::Mapping::TrackMapperFixels mapper(index_image);
+    DWI::Tractography::Mapping::TrackMapperFixels mapper(index_image, directions, angular_threshold);
     mapper.set_upsample_ratio(DWI::Tractography::Mapping::determine_upsample_ratio(index_header, properties, 0.333f));
     mapper.set_use_precise_mapping(true);
     Tractography::Properties properties;
