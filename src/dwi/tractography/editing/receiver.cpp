@@ -23,7 +23,6 @@ bool Receiver::operator()(const Streamline<> &in) {
     return (printf("%8" PRIu64 " read, %8" PRIu64 " written", total_count, count) +
             (crop ? printf(", %8" PRIu64 " segments", segments) : ""));
   };
-
   if (number && (count == number))
     return false;
 
