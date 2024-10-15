@@ -45,7 +45,7 @@ class TrackMapperFixels {
 public:
   template <class HeaderType>
   TrackMapperFixels(
-    const HeaderType &template_image,
+    HeaderType &template_image,
     const std::vector<Eigen::Vector3d> &fixel_directions, 
     const float angular_threshold
   )
@@ -117,14 +117,42 @@ public:
         voxelise(temp, vdir);
       postprocess(temp, vdir);
     }
+    // For each voxel tract tangent, assign to a fixel
     std::vector<int32_t> tract_fixel_indices;
-    out = in;
+    for (SetVoxelDir::const_iterator tangent = vdir.begin(); tangent != vdir.end(); ++tangent) {
+      assign_pos_of(*tangent).to(fixel_indexer);
+      fixel_indexer.index(3) = 0;
+      uint32_t num_fibres = fixel_indexer.value();
+      //for each voxel, if number of fibres is greater than 0, for each fixel index, select one fixel index that matches the track tangent and count the track agains it. 
+      if (num_fibres > 0) {
+        fixel_indexer.index(3) = 1;
+        uint32_t first_index = fixel_indexer.value();
+        uint32_t last_index = first_index + num_fibres;
+        uint32_t closest_fixel_index = 0;
+        float largest_dp = 0.0;
+        const Eigen::Vector3d dir(tangent->get_dir().normalized());
+        for (uint32_t j = first_index; j < last_index; ++j) {
+          const float dp = abs(dir.dot(fixel_directions[j]));
+          if (dp > largest_dp) {
+            largest_dp = dp;
+            closest_fixel_index = j;
+          }
+        }
+        if (largest_dp > angular_threshold_dp) {
+          //add fixel indice for closest fixel to tract_fixel_indices for that streamline (within a voxel)
+          tract_fixel_indices.push_back(closest_fixel_index);
+        }
+      }
+    }
+    if (tract_fixel_indices.size()) {
+      out = in;
+    }
     return true;
   }
 
 protected:
   const Header info;
-  const Image<uint32_t> &fixel_indexer;
+  Image<uint32_t> &fixel_indexer;
   const std::vector<Eigen::Vector3d> &fixel_directions;
   const float angular_threshold_dp;
   const Eigen::Transform<float, 3, Eigen::AffineCompact> scanner2voxel;
