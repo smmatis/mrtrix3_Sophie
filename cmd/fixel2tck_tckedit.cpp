@@ -42,7 +42,7 @@ using namespace MR::DWI::Tractography::Editing;
 
 using Fixel::index_type;
 
-#define DEFAULT_ANGLE_THRESHOLD 45.0
+#define DEFAULT_ANGLE_THRESHOLD 10.0
 
 class TrackProcessor {
 

@@ -3,4 +3,4 @@
 cmake -B build -DCMAKE_INSTALL_PREFIX=/mrtrix3_Sophie
 cmake --build build
 
-build/bin/fixel2tck_tckedit ../tckedit_fixel_testing/tracks_200k_sift.tck ../tckedit_fixel_testing/stats_fdc_CON_higher_PNFA/ ../tckedit_fixel_testing/stats_fdc_CON_higher_PNFA/ TESTDJKBH -debug -force
+build/bin/fixel2tck_tckedit ../tckedit_fixel_testing/tracks_200k_sift.tck ../tckedit_fixel_testing/CROPPED_stats_fdc_CON_higher_PNFA/ ../tckedit_fixel_testing/CROPPED_stats_fdc_CON_higher_PNFA/ TESTDJKBH -debug -force
